@@ -1,0 +1,413 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — AMS{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+.dashboard-hero{
+    background:linear-gradient(135deg,#0f172a,#1e40af);
+    color:white;
+    border-radius:24px;
+    padding:2rem;
+    margin-bottom:2rem;
+    box-shadow:0 20px 40px rgba(0,0,0,.15);
+}
+
+.stat-card{
+    border:none;
+    border-radius:20px;
+    overflow:hidden;
+    transition:.25s;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    height:100%;
+}
+
+.stat-card:hover{
+    transform:translateY(-5px);
+}
+
+.stat-body{
+    padding:1.5rem;
+}
+
+.stat-number{
+    font-size:2rem;
+    font-weight:700;
+}
+
+.stat-icon{
+    font-size:3rem;
+    opacity:.2;
+}
+
+.bg-blue{
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+    color:white;
+}
+
+.bg-green{
+    background:linear-gradient(135deg,#16a34a,#4ade80);
+    color:white;
+}
+
+.bg-orange{
+    background:linear-gradient(135deg,#f59e0b,#fbbf24);
+    color:white;
+}
+
+.bg-red{
+    background:linear-gradient(135deg,#dc2626,#f87171);
+    color:white;
+}
+
+.bg-dark-purple{
+    background:linear-gradient(135deg,#581c87,#9333ea);
+    color:white;
+}
+
+.panel-card{
+    border:none;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,.07);
+}
+
+.table td,
+.table th{
+    vertical-align:middle;
+}
+
+.quick-action{
+    border-radius:14px;
+    padding:12px;
+    font-weight:600;
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+```
+<div class="dashboard-hero">
+
+    <div class="row align-items-center">
+
+        <div class="col-lg-8">
+
+            <h2 class="fw-bold mb-2">
+                <i class="bi bi-speedometer2"></i>
+                Asset Management Dashboard
+            </h2>
+
+            <p class="mb-0">
+                Welcome back,
+                <strong>
+                    {{ user.get_full_name|default:user.username }}
+                </strong>
+            </p>
+
+        </div>
+
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+
+            <div>
+                <i class="bi bi-calendar-event"></i>
+                {% now "F d, Y" %}
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row g-4 mb-4">
+
+    <div class="col-md-6 col-xl">
+        <div class="card stat-card bg-blue">
+            <div class="stat-body d-flex justify-content-between">
+                <div>
+                    <div class="stat-number">{{ total_assets }}</div>
+                    <div>Total Assets</div>
+                </div>
+                <i class="bi bi-pc-display stat-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl">
+        <div class="card stat-card bg-green">
+            <div class="stat-body d-flex justify-content-between">
+                <div>
+                    <div class="stat-number">{{ available_assets }}</div>
+                    <div>Available</div>
+                </div>
+                <i class="bi bi-check-circle-fill stat-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl">
+        <div class="card stat-card bg-orange">
+            <div class="stat-body d-flex justify-content-between">
+                <div>
+                    <div class="stat-number">{{ assigned_assets }}</div>
+                    <div>Assigned</div>
+                </div>
+                <i class="bi bi-person-check-fill stat-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl">
+        <div class="card stat-card bg-red">
+            <div class="stat-body d-flex justify-content-between">
+                <div>
+                    <div class="stat-number">{{ repair_assets }}</div>
+                    <div>Repair</div>
+                </div>
+                <i class="bi bi-tools stat-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl">
+        <div class="card stat-card bg-dark-purple">
+            <div class="stat-body d-flex justify-content-between">
+                <div>
+                    <div class="stat-number">{{ retired_assets }}</div>
+                    <div>Retired</div>
+                </div>
+                <i class="bi bi-archive-fill stat-icon"></i>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4 mb-4">
+
+    <div class="col-lg-8">
+
+        <div class="card panel-card">
+            <div class="card-body p-4">
+
+                <h5 class="mb-4">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                    Quick Actions
+                </h5>
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <a href="{% url 'asset-create' %}"
+                           class="btn btn-primary w-100 quick-action">
+                            <i class="bi bi-plus-circle"></i>
+                            Add Asset
+                        </a>
+                    </div>
+
+                    <div class="col-md-4">
+                        <a href="{% url 'asset-list' %}"
+                           class="btn btn-success w-100 quick-action">
+                            <i class="bi bi-list-ul"></i>
+                            Asset List
+                        </a>
+                    </div>
+
+                    <div class="col-md-4">
+                        <a href="{% url 'profile' %}"
+                           class="btn btn-dark w-100 quick-action">
+                            <i class="bi bi-person"></i>
+                            My Profile
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-lg-4">
+
+        <div class="card panel-card">
+            <div class="card-body p-4">
+
+                <h5 class="mb-3">
+                    User Information
+                </h5>
+
+                <div class="mb-3">
+
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}"
+                             width="70"
+                             height="70"
+                             class="rounded-circle">
+                    {% else %}
+                        <i class="bi bi-person-circle fs-1"></i>
+                    {% endif %}
+
+                </div>
+
+                <p class="mb-1">
+                    <strong>{{ user.get_full_name|default:user.username }}</strong>
+                </p>
+
+                <p class="text-muted">
+                    {{ user.get_role_display }}
+                </p>
+
+                <hr>
+
+                <p><strong>Email:</strong> {{ user.email }}</p>
+
+                <p>
+                    <strong>Department:</strong>
+                    {{ user.department|default:"—" }}
+                </p>
+
+                <p>
+                    <strong>Last Login:</strong><br>
+                    {{ user.last_login|date:"Y-m-d H:i" }}
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row g-4">
+
+    <div class="col-lg-6">
+
+        <div class="card panel-card">
+            <div class="card-body">
+
+                <h5 class="mb-3">
+                    Recent Assets
+                </h5>
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover">
+
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                        {% for asset in recent_assets %}
+
+                            <tr>
+
+                                <td>{{ asset.asset_code }}</td>
+
+                                <td>{{ asset.name }}</td>
+
+                                <td>
+                                    <a href="{% url 'asset-detail' asset.pk %}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        View
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+                                <td colspan="3">
+                                    No assets found.
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-lg-6">
+
+        <div class="card panel-card">
+            <div class="card-body">
+
+                <h5 class="mb-3">
+                    Recent Assignments
+                </h5>
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover">
+
+                        <thead>
+                            <tr>
+                                <th>Asset</th>
+                                <th>Employee</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                        {% for assignment in recent_assignments %}
+
+                            <tr>
+
+                                <td>
+                                    {{ assignment.asset.name }}
+                                </td>
+
+                                <td>
+                                    {{ assignment.employee }}
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+                                <td colspan="2">
+                                    No assignments found.
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+{% endblock %}

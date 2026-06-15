@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Login — AMS{% endblock %}
+
+{% block content %}
+
+<style>
+body{
+    background: linear-gradient(135deg,#0f172a,#1e293b,#2563eb);
+    min-height:100vh;
+}
+
+.login-card{
+    border:none;
+    border-radius:20px;
+    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,.95);
+    box-shadow: 0 15px 35px rgba(0,0,0,.15);
+}
+
+.logo-circle{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    background: linear-gradient(135deg,#2563eb,#3b82f6);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 15px;
+    color:white;
+    font-size:2rem;
+}
+
+.form-control{
+    border-radius:12px;
+    padding:.75rem;
+}
+
+.input-group-text{
+    border-radius:12px 0 0 12px;
+}
+
+.btn-login{
+    border:none;
+    border-radius:12px;
+    padding:12px;
+    font-weight:600;
+    background: linear-gradient(135deg,#2563eb,#1d4ed8);
+    transition:.3s;
+}
+
+.btn-login:hover{
+    transform: translateY(-2px);
+    box-shadow:0 10px 20px rgba(37,99,235,.3);
+}
+
+.login-title{
+    font-weight:700;
+}
+
+.login-subtitle{
+    color:#6c757d;
+    font-size:.95rem;
+}
+</style>
+
+<div class="container">
+    <div class="row justify-content-center align-items-center"
+         style="min-height:100vh;">
+
+        <div class="col-md-5 col-lg-4">
+
+            <div class="card login-card">
+                <div class="card-body p-5">
+
+                    <div class="logo-circle">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+
+                    <h3 class="text-center login-title">
+                        Asset Management
+                    </h3>
+
+                    <p class="text-center login-subtitle mb-4">
+                        Sign in to continue
+                    </p>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-danger">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Username
+                            </label>
+
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-person"></i>
+                                </span>
+
+                                <input
+                                    type="text"
+                                    name="username"
+                                    class="form-control"
+                                    placeholder="Enter username"
+                                    required
+                                    autofocus
+                                >
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                Password
+                            </label>
+
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock"></i>
+                                </span>
+
+                                <input
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                    class="form-control"
+                                    placeholder="Enter password"
+                                    required
+                                >
+
+                                <button
+                                    class="btn btn-outline-secondary"
+                                    type="button"
+                                    onclick="togglePassword()">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-login text-white w-100">
+                            <i class="bi bi-box-arrow-in-right"></i>
+                            Login
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+    const password = document.getElementById("password");
+
+    if(password.type === "password"){
+        password.type = "text";
+    }else{
+        password.type = "password";
+    }
+}
+</script>
+
+{% endblock %}
