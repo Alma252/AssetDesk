@@ -27,11 +27,23 @@ class AssetListView(LoginRequiredMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
+
         qs = (
             Asset.objects
-            .select_related("category", "department")
+            .select_related(
+                "category",
+                "department",
+            )
             .order_by("asset_code")
         )
+
+        user = self.request.user
+
+        # فقط Asset های خود کارمند
+        if not user.can_manage_assets:
+            qs = qs.filter(
+                assignments__employee=user,
+            ).distinct()
 
         status = self.request.GET.get("status")
         category = self.request.GET.get("category")
@@ -64,30 +76,92 @@ class AssetListView(LoginRequiredMixin, ListView):
         return context
 
 
-class AssetDetailView(LoginRequiredMixin, DetailView):
+class AssetDetailView(
+    LoginRequiredMixin,
+    DetailView
+):
     model = Asset
     template_name = "assets/asset_detail.html"
     context_object_name = "asset"
 
     def get_queryset(self):
+
         return (
             Asset.objects
-            .select_related("category", "department")
+            .select_related(
+                "category",
+                "department",
+            )
             .prefetch_related(
                 Prefetch(
                     "assignments",
-                    queryset=AssetAssignment.objects.select_related("employee").order_by("-assigned_at"),
+                    queryset=(
+                        AssetAssignment.objects
+                        .select_related("employee")
+                        .order_by("-assigned_at")
+                    ),
                 )
             )
         )
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["assignments"] = self.object.assignments.all()
-        context["current_holder"] = self.object.current_holder
-        context["current_assignment"] = self.object.current_assignment
-        return context
+    def dispatch(
+        self,
+        request,
+        *args,
+        **kwargs
+    ):
 
+        asset = self.get_object()
+
+        if request.user.can_manage_assets:
+            return super().dispatch(
+                request,
+                *args,
+                **kwargs,
+            )
+
+        has_access = asset.assignments.filter(
+            employee=request.user
+        ).exists()
+
+        if not has_access:
+
+            messages.error(
+                request,
+                "You do not have access to this asset."
+            )
+
+            return redirect(
+                "asset-list"
+            )
+
+        return super().dispatch(
+            request,
+            *args,
+            **kwargs,
+        )
+
+    def get_context_data(
+        self,
+        **kwargs
+    ):
+        context = super().get_context_data(
+            **kwargs
+        )
+
+        context["assignments"] = (
+            self.object.assignments.all()
+        )
+
+        context["current_holder"] = (
+            self.object.current_holder
+        )
+
+        context["current_assignment"] = (
+            self.object.current_assignment
+        )
+
+        return context
 
 class AssetCreateView(LoginRequiredMixin, CanManageAssetsMixin, CreateView):
     model = Asset

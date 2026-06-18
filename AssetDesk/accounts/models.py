@@ -92,15 +92,7 @@ class User(AbstractUser ,TimeStampedModel):
     def is_employee(self):
         return self.role == self.Roles.EMPLOYEE
 
-    @property
-    def can_manage_assets(self):
-        if self.is_superuser:
-            return True
-        return self.role in (
-            self.Roles.ADMIN,
-            self.Roles.MANAGER,
-            self.Roles.IT_EXPERT,
-        )
+
 
     def clean(self):
         super().clean()
@@ -125,3 +117,22 @@ class User(AbstractUser ,TimeStampedModel):
         indexes = [
             models.Index(fields=["role"]),
         ]
+
+    @property
+    def is_staff_member(self):
+        if self.is_superuser:
+            return True
+
+        return self.role in (
+            self.Roles.ADMIN,
+            self.Roles.MANAGER,
+            self.Roles.IT_EXPERT,
+        )
+
+    @property
+    def can_manage_assets(self):
+        return self.is_staff_member
+
+    @property
+    def can_manage_tickets(self):
+        return self.is_staff_member

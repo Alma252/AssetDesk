@@ -3,411 +3,1236 @@
 {% block title %}Dashboard — AMS{% endblock %}
 
 {% block extra_css %}
-
 <style>
+    :root{
+        --ams-bg: #f1f5f9;
+        --ams-dark: #0f172a;
+        --ams-primary: #2563eb;
+        --ams-success: #16a34a;
+        --ams-warning: #f59e0b;
+        --ams-danger: #dc2626;
+        --ams-purple: #7c3aed;
+        --ams-surface: #ffffff;
+        --ams-border: #e2e8f0;
+        --ams-muted: #64748b;
+    }
 
-.dashboard-hero{
-    background:linear-gradient(135deg,#0f172a,#1e40af);
-    color:white;
-    border-radius:24px;
-    padding:2rem;
-    margin-bottom:2rem;
-    box-shadow:0 20px 40px rgba(0,0,0,.15);
-}
+    body{
+        background: var(--ams-bg);
+    }
 
-.stat-card{
-    border:none;
-    border-radius:20px;
-    overflow:hidden;
-    transition:.25s;
-    box-shadow:0 10px 25px rgba(0,0,0,.08);
-    height:100%;
-}
+    .dashboard-shell{
+        padding-bottom: 1rem;
+    }
 
-.stat-card:hover{
-    transform:translateY(-5px);
-}
+    .hero-card{
+        position: relative;
+        overflow: hidden;
+        border: none;
+        border-radius: 30px;
+        color: #fff;
+        background:
+            radial-gradient(circle at top right, rgba(255,255,255,.16), transparent 28%),
+            radial-gradient(circle at bottom left, rgba(255,255,255,.10), transparent 24%),
+            linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%);
+        box-shadow: 0 25px 60px rgba(15, 23, 42, .20);
+    }
 
-.stat-body{
-    padding:1.5rem;
-}
+    .hero-card::before{
+        content: "";
+        position: absolute;
+        width: 360px;
+        height: 360px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.06);
+        top: -170px;
+        right: -120px;
+    }
 
-.stat-number{
-    font-size:2rem;
-    font-weight:700;
-}
+    .hero-card::after{
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.05);
+        bottom: -110px;
+        left: -90px;
+    }
 
-.stat-icon{
-    font-size:3rem;
-    opacity:.2;
-}
+    .hero-inner{
+        position: relative;
+        z-index: 1;
+        padding: 2.3rem;
+    }
 
-.bg-blue{
-    background:linear-gradient(135deg,#2563eb,#60a5fa);
-    color:white;
-}
+    .hero-kicker{
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .42rem .82rem;
+        border-radius: 999px;
+        background: rgba(255,255,255,.12);
+        font-size: .82rem;
+        font-weight: 700;
+        letter-spacing: .3px;
+        margin-bottom: 1rem;
+        backdrop-filter: blur(10px);
+    }
 
-.bg-green{
-    background:linear-gradient(135deg,#16a34a,#4ade80);
-    color:white;
-}
+    .hero-title{
+        font-size: clamp(1.7rem, 2.3vw, 2.7rem);
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: .8rem;
+    }
 
-.bg-orange{
-    background:linear-gradient(135deg,#f59e0b,#fbbf24);
-    color:white;
-}
+    .hero-subtitle{
+        max-width: 760px;
+        color: rgba(255,255,255,.82);
+        font-size: 1rem;
+        line-height: 1.7;
+        margin-bottom: 0;
+    }
 
-.bg-red{
-    background:linear-gradient(135deg,#dc2626,#f87171);
-    color:white;
-}
+    .hero-meta{
+        display: flex;
+        flex-wrap: wrap;
+        gap: .75rem;
+        margin-top: 1.35rem;
+    }
 
-.bg-dark-purple{
-    background:linear-gradient(135deg,#581c87,#9333ea);
-    color:white;
-}
+    .meta-pill{
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .55rem .9rem;
+        border-radius: 999px;
+        background: rgba(255,255,255,.12);
+        color: rgba(255,255,255,.95);
+        font-size: .9rem;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+    }
 
-.panel-card{
-    border:none;
-    border-radius:20px;
-    box-shadow:0 10px 25px rgba(0,0,0,.07);
-}
+    .hero-side{
+        position: relative;
+        z-index: 1;
+        padding: 2.3rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 100%;
+        border-left: 1px solid rgba(255,255,255,.12);
+    }
 
-.table td,
-.table th{
-    vertical-align:middle;
-}
+    .hero-user{
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
 
-.quick-action{
-    border-radius:14px;
-    padding:12px;
-    font-weight:600;
-}
+    .hero-avatar{
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(255,255,255,.35);
+        box-shadow: 0 10px 25px rgba(0,0,0,.18);
+        background: rgba(255,255,255,.10);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
 
+    .hero-user-name{
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 800;
+    }
+
+    .hero-user-role{
+        color: rgba(255,255,255,.75);
+        font-size: .92rem;
+        margin-top: .15rem;
+    }
+
+    .hero-date{
+        font-size: 1.35rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-top: 1rem;
+    }
+
+    .hero-date-sub{
+        color: rgba(255,255,255,.75);
+        font-size: .92rem;
+        margin-top: .3rem;
+    }
+
+    .panel-card{
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 14px 35px rgba(15, 23, 42, .07);
+        background: var(--ams-surface);
+    }
+
+    .panel-head{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .panel-title{
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    .panel-subtitle{
+        color: var(--ams-muted);
+        font-size: .9rem;
+        margin: .2rem 0 0 0;
+    }
+
+    .stat-card{
+        border: none;
+        border-radius: 22px;
+        overflow: hidden;
+        position: relative;
+        transition: transform .22s ease, box-shadow .22s ease;
+        min-height: 132px;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, .08);
+    }
+
+    .stat-card:hover{
+        transform: translateY(-6px);
+        box-shadow: 0 18px 38px rgba(15, 23, 42, .13);
+    }
+
+    .stat-card .stat-body{
+        padding: 1.35rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-card .stat-icon{
+        font-size: 3.4rem;
+        opacity: .16;
+        position: absolute;
+        right: 1rem;
+        bottom: .75rem;
+    }
+
+    .stat-number{
+        font-size: 2.15rem;
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -.5px;
+    }
+
+    .stat-label{
+        margin-top: .35rem;
+        font-size: .95rem;
+        font-weight: 700;
+        opacity: .95;
+    }
+
+    .stat-note{
+        margin-top: .4rem;
+        font-size: .84rem;
+        opacity: .82;
+    }
+
+    .bg-blue{
+        background: linear-gradient(135deg, #2563eb, #60a5fa);
+        color: #fff;
+    }
+
+    .bg-green{
+        background: linear-gradient(135deg, #16a34a, #4ade80);
+        color: #fff;
+    }
+
+    .bg-orange{
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+        color: #fff;
+    }
+
+    .bg-red{
+        background: linear-gradient(135deg, #dc2626, #f87171);
+        color: #fff;
+    }
+
+    .bg-purple{
+        background: linear-gradient(135deg, #6d28d9, #a855f7);
+        color: #fff;
+    }
+
+    .bg-slate{
+        background: linear-gradient(135deg, #334155, #64748b);
+        color: #fff;
+    }
+
+    .quick-card{
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 14px 35px rgba(15, 23, 42, .07);
+        background: #fff;
+    }
+
+    .quick-item{
+        display: flex;
+        align-items: center;
+        gap: .9rem;
+        padding: 1rem 1.05rem;
+        border: 1px solid var(--ams-border);
+        border-radius: 18px;
+        text-decoration: none;
+        color: #0f172a;
+        transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        background: linear-gradient(180deg, #fff, #fbfdff);
+    }
+
+    .quick-item:hover{
+        transform: translateY(-4px);
+        border-color: rgba(37, 99, 235, .35);
+        box-shadow: 0 12px 28px rgba(37, 99, 235, .10);
+        color: #0f172a;
+    }
+
+    .quick-icon{
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        color: #fff;
+    }
+
+    .qi-blue{ background: linear-gradient(135deg, #2563eb, #60a5fa); }
+    .qi-green{ background: linear-gradient(135deg, #16a34a, #4ade80); }
+    .qi-dark{ background: linear-gradient(135deg, #0f172a, #334155); }
+    .qi-purple{ background: linear-gradient(135deg, #6d28d9, #a855f7); }
+    .qi-orange{ background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+
+    .quick-title{
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: .15rem;
+    }
+
+    .quick-desc{
+        font-size: .88rem;
+        color: var(--ams-muted);
+        margin: 0;
+    }
+
+    .user-card{
+        border: none;
+        border-radius: 24px;
+        background:
+            radial-gradient(circle at top right, rgba(37, 99, 235, .08), transparent 35%),
+            #fff;
+        box-shadow: 0 14px 35px rgba(15, 23, 42, .07);
+    }
+
+    .user-avatar{
+        width: 84px;
+        height: 84px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid #e2e8f0;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, .08);
+        background: #f8fafc;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.3rem;
+        color: #64748b;
+    }
+
+    .info-row{
+        padding: .9rem 0;
+        border-bottom: 1px solid #eef2f7;
+    }
+
+    .info-row:last-child{
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .info-label{
+        font-size: .76rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #94a3b8;
+        margin-bottom: .2rem;
+    }
+
+    .info-value{
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .table-card{
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 14px 35px rgba(15, 23, 42, .07);
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .table-card .table{
+        margin-bottom: 0;
+    }
+
+    .table-card thead th{
+        background: #f8fafc;
+        color: #334155;
+        font-size: .82rem;
+        text-transform: uppercase;
+        letter-spacing: .8px;
+        border-bottom: 1px solid #e2e8f0;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .table-card tbody td{
+        vertical-align: middle;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .asset-badge{
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .4rem .75rem;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: .8rem;
+        font-weight: 700;
+    }
+
+    .ticket-pill{
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .4rem .75rem;
+        border-radius: 999px;
+        font-size: .8rem;
+        font-weight: 700;
+    }
+
+    .status-open{ background: #dbeafe; color: #1d4ed8; }
+    .status-in_progress{ background: #fef3c7; color: #b45309; }
+    .status-awaiting_user{ background: #ede9fe; color: #6d28d9; }
+    .status-resolved{ background: #dcfce7; color: #15803d; }
+    .status-closed{ background: #e2e8f0; color: #475569; }
+
+    .priority-low{ background: #e2e8f0; color: #334155; }
+    .priority-medium{ background: #dbeafe; color: #1d4ed8; }
+    .priority-high{ background: #fef3c7; color: #b45309; }
+    .priority-urgent{ background: #fee2e2; color: #b91c1c; }
+
+    .empty-state{
+        padding: 2.5rem 1rem;
+        text-align: center;
+        color: var(--ams-muted);
+    }
+
+    .empty-state i{
+        font-size: 2.2rem;
+        display: block;
+        margin-bottom: .7rem;
+        opacity: .45;
+    }
+
+    .section-divider{
+        margin: 1.5rem 0;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .muted-note{
+        color: var(--ams-muted);
+        font-size: .9rem;
+        line-height: 1.65;
+    }
+
+    @media (max-width: 991.98px){
+        .hero-side{
+            border-left: 0;
+            border-top: 1px solid rgba(255,255,255,.12);
+        }
+    }
+
+    @media (max-width: 767.98px){
+        .hero-inner,
+        .hero-side{
+            padding: 1.35rem;
+        }
+
+        .stat-number{
+            font-size: 1.85rem;
+        }
+    }
 </style>
-
 {% endblock %}
 
 {% block content %}
+<div class="container-fluid dashboard-shell">
 
-<div class="container-fluid">
-
-```
-<div class="dashboard-hero">
-
-    <div class="row align-items-center">
-
-        <div class="col-lg-8">
-
-            <h2 class="fw-bold mb-2">
-                <i class="bi bi-speedometer2"></i>
-                Asset Management Dashboard
-            </h2>
-
-            <p class="mb-0">
-                Welcome back,
-                <strong>
-                    {{ user.get_full_name|default:user.username }}
-                </strong>
-            </p>
-
-        </div>
-
-        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-
-            <div>
-                <i class="bi bi-calendar-event"></i>
-                {% now "F d, Y" %}
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div class="row g-4 mb-4">
-
-    <div class="col-md-6 col-xl">
-        <div class="card stat-card bg-blue">
-            <div class="stat-body d-flex justify-content-between">
-                <div>
-                    <div class="stat-number">{{ total_assets }}</div>
-                    <div>Total Assets</div>
-                </div>
-                <i class="bi bi-pc-display stat-icon"></i>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl">
-        <div class="card stat-card bg-green">
-            <div class="stat-body d-flex justify-content-between">
-                <div>
-                    <div class="stat-number">{{ available_assets }}</div>
-                    <div>Available</div>
-                </div>
-                <i class="bi bi-check-circle-fill stat-icon"></i>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl">
-        <div class="card stat-card bg-orange">
-            <div class="stat-body d-flex justify-content-between">
-                <div>
-                    <div class="stat-number">{{ assigned_assets }}</div>
-                    <div>Assigned</div>
-                </div>
-                <i class="bi bi-person-check-fill stat-icon"></i>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl">
-        <div class="card stat-card bg-red">
-            <div class="stat-body d-flex justify-content-between">
-                <div>
-                    <div class="stat-number">{{ repair_assets }}</div>
-                    <div>Repair</div>
-                </div>
-                <i class="bi bi-tools stat-icon"></i>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl">
-        <div class="card stat-card bg-dark-purple">
-            <div class="stat-body d-flex justify-content-between">
-                <div>
-                    <div class="stat-number">{{ retired_assets }}</div>
-                    <div>Retired</div>
-                </div>
-                <i class="bi bi-archive-fill stat-icon"></i>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<div class="row g-4 mb-4">
-
-    <div class="col-lg-8">
-
-        <div class="card panel-card">
-            <div class="card-body p-4">
-
-                <h5 class="mb-4">
-                    <i class="bi bi-lightning-charge-fill"></i>
-                    Quick Actions
-                </h5>
-
-                <div class="row g-3">
-
-                    <div class="col-md-4">
-                        <a href="{% url 'asset-create' %}"
-                           class="btn btn-primary w-100 quick-action">
-                            <i class="bi bi-plus-circle"></i>
-                            Add Asset
-                        </a>
+    <div class="card hero-card mb-4">
+        <div class="row g-0 align-items-stretch">
+            <div class="col-lg-8">
+                <div class="hero-inner">
+                    <div class="hero-kicker">
+                        <i class="bi bi-speedometer2"></i>
+                        Asset Management Dashboard
                     </div>
 
-                    <div class="col-md-4">
-                        <a href="{% url 'asset-list' %}"
-                           class="btn btn-success w-100 quick-action">
-                            <i class="bi bi-list-ul"></i>
-                            Asset List
-                        </a>
-                    </div>
-
-                    <div class="col-md-4">
-                        <a href="{% url 'profile' %}"
-                           class="btn btn-dark w-100 quick-action">
-                            <i class="bi bi-person"></i>
-                            My Profile
-                        </a>
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-
-    </div>
-
-    <div class="col-lg-4">
-
-        <div class="card panel-card">
-            <div class="card-body p-4">
-
-                <h5 class="mb-3">
-                    User Information
-                </h5>
-
-                <div class="mb-3">
-
-                    {% if user.avatar %}
-                        <img src="{{ user.avatar.url }}"
-                             width="70"
-                             height="70"
-                             class="rounded-circle">
+                    {% if is_staff_dashboard %}
+                        <div class="hero-title">
+                            Welcome back, {{ user.get_full_name|default:user.username }}
+                        </div>
+                        <p class="hero-subtitle">
+                            Admin, Manager and IT Expert view. Here you can monitor inventory, assignments and support tickets across the whole system.
+                        </p>
                     {% else %}
-                        <i class="bi bi-person-circle fs-1"></i>
+                        <div class="hero-title">
+                            Welcome, {{ user.get_full_name|default:user.username }}
+                        </div>
+                        <p class="hero-subtitle">
+                            Your personal workspace. Here you can see your assigned assets and the tickets you created.
+                        </p>
                     {% endif %}
 
+                    <div class="hero-meta">
+                        <span class="meta-pill">
+                            <i class="bi bi-calendar3"></i>
+                            {% now "F d, Y" %}
+                        </span>
+                        <span class="meta-pill">
+                            <i class="bi bi-clock-history"></i>
+                            {% now "H:i" %}
+                        </span>
+                        <span class="meta-pill">
+                            <i class="bi bi-person-badge"></i>
+                            {{ user.get_role_display }}
+                        </span>
+                    </div>
                 </div>
+            </div>
 
-                <p class="mb-1">
-                    <strong>{{ user.get_full_name|default:user.username }}</strong>
-                </p>
+            <div class="col-lg-4">
+                <div class="hero-side">
+                    <div class="hero-user">
+                        {% if user.avatar %}
+                            <img src="{{ user.avatar.url }}" alt="Avatar" class="hero-avatar">
+                        {% else %}
+                            <div class="hero-avatar">
+                                <i class="bi bi-person"></i>
+                            </div>
+                        {% endif %}
 
-                <p class="text-muted">
-                    {{ user.get_role_display }}
-                </p>
+                        <div>
+                            <p class="hero-user-name">{{ user.get_full_name|default:user.username }}</p>
+                            <div class="hero-user-role">{{ user.get_role_display }}</div>
+                        </div>
+                    </div>
 
-                <hr>
+                    <div>
+                        <div class="hero-date">
+                            {% now "l" %}
+                        </div>
+                        <div class="hero-date-sub">
+                            Last login: {{ user.last_login|date:"Y-m-d H:i"|default:"—" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <p><strong>Email:</strong> {{ user.email }}</p>
+    {% if is_staff_dashboard %}
+        <div class="row g-4 mb-4">
+            <div class="col-md-6 col-xl">
+                <div class="card stat-card bg-blue">
+                    <div class="stat-body">
+                        <div class="stat-number">{{ total_assets }}</div>
+                        <div class="stat-label">Total Assets</div>
+                        <div class="stat-note">Everything registered in the system</div>
+                        <i class="bi bi-pc-display stat-icon"></i>
+                    </div>
+                </div>
+            </div>
 
-                <p>
-                    <strong>Department:</strong>
-                    {{ user.department|default:"—" }}
-                </p>
+            <div class="col-md-6 col-xl">
+                <div class="card stat-card bg-green">
+                    <div class="stat-body">
+                        <div class="stat-number">{{ available_assets }}</div>
+                        <div class="stat-label">Available</div>
+                        <div class="stat-note">Ready for assignment</div>
+                        <i class="bi bi-check-circle-fill stat-icon"></i>
+                    </div>
+                </div>
+            </div>
 
-                <p>
-                    <strong>Last Login:</strong><br>
-                    {{ user.last_login|date:"Y-m-d H:i" }}
-                </p>
+            <div class="col-md-6 col-xl">
+                <div class="card stat-card bg-orange">
+                    <div class="stat-body">
+                        <div class="stat-number">{{ assigned_assets }}</div>
+                        <div class="stat-label">Assigned</div>
+                        <div class="stat-note">Currently in use</div>
+                        <i class="bi bi-person-check-fill stat-icon"></i>
+                    </div>
+                </div>
+            </div>
 
+            <div class="col-md-6 col-xl">
+                <div class="card stat-card bg-red">
+                    <div class="stat-body">
+                        <div class="stat-number">{{ repair_assets }}</div>
+                        <div class="stat-label">Under Repair</div>
+                        <div class="stat-note">Needs attention</div>
+                        <i class="bi bi-tools stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl">
+                <div class="card stat-card bg-purple">
+                    <div class="stat-body">
+                        <div class="stat-number">{{ retired_assets }}</div>
+                        <div class="stat-label">Retired</div>
+                        <div class="stat-note">Removed from active service</div>
+                        <i class="bi bi-archive-fill stat-icon"></i>
+                    </div>
+                </div>
             </div>
         </div>
 
-    </div>
-
-</div>
-
-<div class="row g-4">
-
-    <div class="col-lg-6">
-
-        <div class="card panel-card">
-            <div class="card-body">
-
-                <h5 class="mb-3">
-                    Recent Assets
-                </h5>
-
-                <div class="table-responsive">
-
-                    <table class="table table-hover">
-
-                        <thead>
-                            <tr>
-                                <th>Code</th>
-                                <th>Name</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                        {% for asset in recent_assets %}
-
-                            <tr>
-
-                                <td>{{ asset.asset_code }}</td>
-
-                                <td>{{ asset.name }}</td>
-
-                                <td>
-                                    <a href="{% url 'asset-detail' asset.pk %}"
-                                       class="btn btn-sm btn-outline-primary">
-                                        View
-                                    </a>
-                                </td>
-
-                            </tr>
-
-                        {% empty %}
-
-                            <tr>
-                                <td colspan="3">
-                                    No assets found.
-                                </td>
-                            </tr>
-
-                        {% endfor %}
-
-                        </tbody>
-
-                    </table>
-
+        <div class="row g-4 mb-4">
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card bg-slate">
+                    <div class="stat-body">
+                        <div class="stat-number">{{ open_tickets }}</div>
+                        <div class="stat-label">Open Tickets</div>
+                        <div class="stat-note">Support requests in progress</div>
+                        <i class="bi bi-ticket-detailed stat-icon"></i>
+                    </div>
                 </div>
+            </div>
 
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card bg-blue">
+                    <div class="stat-body">
+                        <div class="stat-number">{{ recent_tickets|length }}</div>
+                        <div class="stat-label">Recent Tickets</div>
+                        <div class="stat-note">Latest support activity shown</div>
+                        <i class="bi bi-chat-left-text stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card bg-green">
+                    <div class="stat-body">
+                        <div class="stat-number">{{ recent_assignments|length }}</div>
+                        <div class="stat-label">Recent Assignments</div>
+                        <div class="stat-note">Latest asset handovers</div>
+                        <i class="bi bi-arrow-left-right stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card bg-purple">
+                    <div class="stat-body">
+                        <div class="stat-number">{{ recent_assets|length }}</div>
+                        <div class="stat-label">Recent Assets</div>
+                        <div class="stat-note">Latest inventory records</div>
+                        <i class="bi bi-box-seam stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row g-4 mb-4">
+            <div class="col-md-6 col-xl-4">
+                <div class="card stat-card bg-blue">
+                    <div class="stat-body">
+                        <div class="stat-number">{{ assigned_assets }}</div>
+                        <div class="stat-label">My Assets</div>
+                        <div class="stat-note">Assets currently assigned to you</div>
+                        <i class="bi bi-pc-display stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="card stat-card bg-orange">
+                    <div class="stat-body">
+                        <div class="stat-number">{{ open_tickets }}</div>
+                        <div class="stat-label">My Open Tickets</div>
+                        <div class="stat-note">Tickets that still need attention</div>
+                        <i class="bi bi-ticket-detailed stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="card stat-card bg-green">
+                    <div class="stat-body">
+                        <div class="stat-number">{{ repair_assets }}</div>
+                        <div class="stat-label">Assets In Repair</div>
+                        <div class="stat-note">Your assets currently under repair</div>
+                        <i class="bi bi-tools stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row g-4 mb-4">
+        <div class="{% if is_staff_dashboard %}col-lg-8{% else %}col-lg-7{% endif %}">
+            <div class="card quick-card h-100">
+                <div class="card-body p-4">
+                    <div class="panel-head">
+                        <div>
+                            <h5 class="panel-title mb-1">
+                                <i class="bi bi-lightning-charge-fill me-1 text-warning"></i>
+                                Quick Actions
+                            </h5>
+                            <p class="panel-subtitle">Fast access to the most common tasks</p>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        {% if is_staff_dashboard %}
+                            {% if user.can_manage_assets %}
+                            <div class="col-md-4">
+                                <a href="{% url 'asset-create' %}" class="quick-item h-100">
+                                    <div class="quick-icon qi-blue">
+                                        <i class="bi bi-plus-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="quick-title">Add Asset</div>
+                                        <p class="quick-desc">Register a new company asset</p>
+                                    </div>
+                                </a>
+                            </div>
+                            {% endif %}
+
+                            <div class="col-md-4">
+                                <a href="{% url 'asset-list' %}" class="quick-item h-100">
+                                    <div class="quick-icon qi-green">
+                                        <i class="bi bi-box-seam"></i>
+                                    </div>
+                                    <div>
+                                        <div class="quick-title">Asset Inventory</div>
+                                        <p class="quick-desc">Browse the full asset list</p>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="{% url 'ticket-list' %}" class="quick-item h-100">
+                                    <div class="quick-icon qi-purple">
+                                        <i class="bi bi-ticket-detailed"></i>
+                                    </div>
+                                    <div>
+                                        <div class="quick-title">Ticket Center</div>
+                                        <p class="quick-desc">Open and manage support tickets</p>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="{% url 'profile' %}" class="quick-item h-100">
+                                    <div class="quick-icon qi-dark">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+                                    <div>
+                                        <div class="quick-title">My Profile</div>
+                                        <p class="quick-desc">View account details</p>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="{% url 'asset-list' %}?status=under_repair" class="quick-item h-100">
+                                    <div class="quick-icon qi-orange">
+                                        <i class="bi bi-tools"></i>
+                                    </div>
+                                    <div>
+                                        <div class="quick-title">Repair Queue</div>
+                                        <p class="quick-desc">Track assets under repair</p>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="{% url 'ticket-list' %}?status=open" class="quick-item h-100">
+                                    <div class="quick-icon qi-blue">
+                                        <i class="bi bi-exclamation-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="quick-title">Open Tickets</div>
+                                        <p class="quick-desc">See unresolved support requests</p>
+                                    </div>
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="col-md-4">
+                                <a href="{% url 'ticket-create' %}" class="quick-item h-100">
+                                    <div class="quick-icon qi-purple">
+                                        <i class="bi bi-plus-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="quick-title">Create Ticket</div>
+                                        <p class="quick-desc">Report a problem or request support</p>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="{% url 'ticket-list' %}" class="quick-item h-100">
+                                    <div class="quick-icon qi-green">
+                                        <i class="bi bi-ticket-detailed"></i>
+                                    </div>
+                                    <div>
+                                        <div class="quick-title">My Tickets</div>
+                                        <p class="quick-desc">See your support history</p>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="{% url 'profile' %}" class="quick-item h-100">
+                                    <div class="quick-icon qi-dark">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+                                    <div>
+                                        <div class="quick-title">My Profile</div>
+                                        <p class="quick-desc">View account details</p>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="{% url 'asset-list' %}" class="quick-item h-100">
+                                    <div class="quick-icon qi-blue">
+                                        <i class="bi bi-box-seam"></i>
+                                    </div>
+                                    <div>
+                                        <div class="quick-title">Assigned Assets</div>
+                                        <p class="quick-desc">View your assigned equipment</p>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
 
-    </div>
+        <div class="{% if is_staff_dashboard %}col-lg-4{% else %}col-lg-5{% endif %}">
+            <div class="card user-card h-100">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        {% if user.avatar %}
+                            <img src="{{ user.avatar.url }}" alt="Avatar" class="user-avatar mb-3">
+                        {% else %}
+                            <div class="user-avatar mx-auto mb-3">
+                                <i class="bi bi-person"></i>
+                            </div>
+                        {% endif %}
 
-    <div class="col-lg-6">
+                        <h5 class="mb-1 fw-bold">{{ user.get_full_name|default:user.username }}</h5>
+                        <div class="text-muted">{{ user.get_role_display }}</div>
+                    </div>
 
-        <div class="card panel-card">
-            <div class="card-body">
+                    <div class="info-row">
+                        <div class="info-label">Employee ID</div>
+                        <div class="info-value">{{ user.employee_id }}</div>
+                    </div>
 
-                <h5 class="mb-3">
-                    Recent Assignments
-                </h5>
+                    <div class="info-row">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">{{ user.email|default:"—" }}</div>
+                    </div>
 
-                <div class="table-responsive">
+                    <div class="info-row">
+                        <div class="info-label">Department</div>
+                        <div class="info-value">{{ user.department|default:"—" }}</div>
+                    </div>
 
-                    <table class="table table-hover">
+                    <div class="info-row">
+                        <div class="info-label">Position</div>
+                        <div class="info-value">{{ user.position|default:"—" }}</div>
+                    </div>
 
-                        <thead>
-                            <tr>
-                                <th>Asset</th>
-                                <th>Employee</th>
-                            </tr>
-                        </thead>
+                    <div class="info-row">
+                        <div class="info-label">Last Login</div>
+                        <div class="info-value">{{ user.last_login|date:"Y-m-d H:i"|default:"—" }}</div>
+                    </div>
 
-                        <tbody>
-
-                        {% for assignment in recent_assignments %}
-
-                            <tr>
-
-                                <td>
-                                    {{ assignment.asset.name }}
-                                </td>
-
-                                <td>
-                                    {{ assignment.employee }}
-                                </td>
-
-                            </tr>
-
-                        {% empty %}
-
-                            <tr>
-                                <td colspan="2">
-                                    No assignments found.
-                                </td>
-                            </tr>
-
-                        {% endfor %}
-
-                        </tbody>
-
-                    </table>
-
+                    {% if not is_staff_dashboard %}
+                    <div class="info-row">
+                        <div class="info-label">Support Status</div>
+                        <div class="info-value">
+                            {% if open_tickets %}
+                                {{ open_tickets }} open ticket{{ open_tickets|pluralize }}
+                            {% else %}
+                                No open tickets
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
-
             </div>
         </div>
+    </div>
 
+    <div class="row g-4">
+        {% if is_staff_dashboard %}
+            <div class="col-lg-6">
+                <div class="card table-card h-100">
+                    <div class="card-body p-4">
+                        <div class="panel-head">
+                            <div>
+                                <h5 class="panel-title mb-1">
+                                    <i class="bi bi-clock-history me-1 text-primary"></i>
+                                    Recent Assets
+                                </h5>
+                                <p class="panel-subtitle">Latest registered items in the inventory</p>
+                            </div>
+
+                            <a href="{% url 'asset-list' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                View all
+                            </a>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Asset</th>
+                                        <th>Code</th>
+                                        <th>Category</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for asset in recent_assets %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">{{ asset.name }}</div>
+                                                <div class="text-muted small">
+                                                    {{ asset.brand|default:"—" }} {{ asset.model|default:"" }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="asset-badge">
+                                                    <i class="bi bi-hash"></i>
+                                                    {{ asset.asset_code }}
+                                                </span>
+                                            </td>
+                                            <td>{{ asset.category }}</td>
+                                            <td class="text-end">
+                                                <a href="{% url 'asset-detail' asset.pk %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                                    View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="4">
+                                                <div class="empty-state">
+                                                    <i class="bi bi-inbox"></i>
+                                                    No assets found.
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card table-card h-100">
+                    <div class="card-body p-4">
+                        <div class="panel-head">
+                            <div>
+                                <h5 class="panel-title mb-1">
+                                    <i class="bi bi-diagram-3 me-1 text-success"></i>
+                                    Recent Assignments
+                                </h5>
+                                <p class="panel-subtitle">Latest asset handovers in the system</p>
+                            </div>
+
+                            <a href="{% url 'asset-list' %}" class="btn btn-outline-success btn-sm rounded-pill px-3">
+                                Inventory
+                            </a>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Asset</th>
+                                        <th>Employee</th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for assignment in recent_assignments %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">{{ assignment.asset.name }}</div>
+                                                <div class="text-muted small">{{ assignment.asset.asset_code }}</div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">{{ assignment.employee }}</div>
+                                                <div class="text-muted small">{{ assignment.assigned_at|date:"Y-m-d H:i" }}</div>
+                                            </td>
+                                            <td>
+                                                {% if assignment.is_active %}
+                                                    <span class="ticket-pill status-resolved">
+                                                        Active
+                                                    </span>
+                                                {% else %}
+                                                    <span class="ticket-pill status-closed">
+                                                        Returned
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end">
+                                                <a href="{% url 'asset-detail' assignment.asset.pk %}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                                                    View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="4">
+                                                <div class="empty-state">
+                                                    <i class="bi bi-arrow-left-right"></i>
+                                                    No assignments found.
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="panel-head mb-3">
+                            <div>
+                                <h5 class="panel-title mb-1">
+                                    <i class="bi bi-ticket-detailed me-1 text-purple"></i>
+                                    Recent Tickets
+                                </h5>
+                                <p class="panel-subtitle">Latest support requests</p>
+                            </div>
+
+                            <a href="{% url 'ticket-list' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                                View all
+                            </a>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ticket in recent_tickets %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">{{ ticket.ticket_no }}</div>
+                                                <div class="text-muted small">{{ ticket.title }}</div>
+                                            </td>
+                                            <td>
+                                                <span class="ticket-pill status-{{ ticket.status }}">
+                                                    {{ ticket.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="ticket-pill priority-{{ ticket.priority }}">
+                                                    {{ ticket.get_priority_display }}
+                                                </span>
+                                            </td>
+                                            <td class="text-end">
+                                                <a href="{% url 'ticket-detail' ticket.pk %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                                    View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="4">
+                                                <div class="empty-state">
+                                                    <i class="bi bi-ticket-detailed"></i>
+                                                    No tickets found.
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-lg-6">
+                <div class="card table-card h-100">
+                    <div class="card-body p-4">
+                        <div class="panel-head">
+                            <div>
+                                <h5 class="panel-title mb-1">
+                                    <i class="bi bi-clock-history me-1 text-primary"></i>
+                                    My Assigned Assets
+                                </h5>
+                                <p class="panel-subtitle">Equipment currently assigned to you</p>
+                            </div>
+
+                            <a href="{% url 'asset-list' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                View all
+                            </a>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Asset</th>
+                                        <th>Code</th>
+                                        <th>Category</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for assignment in recent_assignments %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">{{ assignment.asset.name }}</div>
+                                                <div class="text-muted small">{{ assignment.assigned_at|date:"Y-m-d H:i" }}</div>
+                                            </td>
+                                            <td>
+                                                <span class="asset-badge">
+                                                    <i class="bi bi-hash"></i>
+                                                    {{ assignment.asset.asset_code }}
+                                                </span>
+                                            </td>
+                                            <td>{{ assignment.asset.category }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="3">
+                                                <div class="empty-state">
+                                                    <i class="bi bi-inbox"></i>
+                                                    No assigned assets.
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card table-card h-100">
+                    <div class="card-body p-4">
+                        <div class="panel-head">
+                            <div>
+                                <h5 class="panel-title mb-1">
+                                    <i class="bi bi-ticket-detailed me-1 text-success"></i>
+                                    My Tickets
+                                </h5>
+                                <p class="panel-subtitle">Your latest support requests</p>
+                            </div>
+
+                            <a href="{% url 'ticket-list' %}" class="btn btn-outline-success btn-sm rounded-pill px-3">
+                                View all
+                            </a>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ticket in recent_tickets %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">{{ ticket.ticket_no }}</div>
+                                                <div class="text-muted small">{{ ticket.title }}</div>
+                                            </td>
+                                            <td>
+                                                <span class="ticket-pill status-{{ ticket.status }}">
+                                                    {{ ticket.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="ticket-pill priority-{{ ticket.priority }}">
+                                                    {{ ticket.get_priority_display }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="3">
+                                                <div class="empty-state">
+                                                    <i class="bi bi-ticket-detailed"></i>
+                                                    No tickets found.
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <div class="muted-note">
+                            Use the quick actions panel to create a new ticket or go back to your profile.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
     </div>
 
 </div>
-
-</div>
-
 {% endblock %}

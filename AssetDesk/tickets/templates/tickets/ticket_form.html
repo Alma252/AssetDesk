@@ -1,0 +1,392 @@
+```html
+{% extends "base.html" %}
+
+{% block title %}
+    {% if object %}Edit Ticket{% else %}New Ticket{% endif %} — AMS
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+:root{
+    --primary:#4f46e5;
+    --primary-dark:#3730a3;
+    --secondary:#2563eb;
+    --dark:#0f172a;
+    --muted:#64748b;
+    --border:rgba(255,255,255,.25);
+}
+
+body{
+    background:
+        radial-gradient(circle at top left,#dbeafe 0%,transparent 35%),
+        radial-gradient(circle at top right,#ddd6fe 0%,transparent 35%),
+        linear-gradient(180deg,#f8fafc,#eef2ff);
+}
+
+/* HERO */
+
+.ticket-hero{
+    background:linear-gradient(
+        135deg,
+        #0f172a,
+        #1e293b
+    );
+
+    border-radius:32px;
+
+    padding:35px;
+
+    color:white;
+
+    margin-bottom:25px;
+
+    box-shadow:
+        0 20px 60px rgba(15,23,42,.20);
+}
+
+.ticket-hero h2{
+    font-weight:800;
+    margin-bottom:.5rem;
+    letter-spacing:-1px;
+}
+
+.ticket-hero p{
+    margin:0;
+    color:rgba(255,255,255,.75);
+}
+
+.hero-badge{
+    background:rgba(255,255,255,.12);
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.15);
+    padding:10px 18px;
+    border-radius:999px;
+    font-size:.85rem;
+    font-weight:600;
+}
+
+/* MAIN CARD */
+
+.form-card{
+
+    border:none;
+
+    border-radius:32px;
+
+    overflow:hidden;
+
+    background:
+        rgba(255,255,255,.72);
+
+    backdrop-filter:blur(20px);
+
+    -webkit-backdrop-filter:blur(20px);
+
+    box-shadow:
+        0 20px 60px rgba(15,23,42,.08),
+        0 8px 24px rgba(15,23,42,.05);
+}
+
+.form-card::before{
+    content:"";
+    display:block;
+    height:5px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #2563eb,
+            #4f46e5,
+            #7c3aed
+        );
+}
+
+/* HEADER */
+
+.form-header{
+    padding:28px 35px;
+    border-bottom:1px solid rgba(226,232,240,.8);
+}
+
+.form-header h4{
+    margin:0;
+    font-weight:700;
+    color:var(--dark);
+}
+
+.form-header span{
+    color:var(--muted);
+    font-size:.92rem;
+}
+
+/* FORM */
+
+.form-section{
+    padding:35px;
+}
+
+.form-label{
+    font-weight:700;
+    font-size:.88rem;
+    color:#334155;
+    margin-bottom:.65rem;
+}
+
+.form-control,
+.form-select{
+
+    border:none !important;
+
+    background:#f8fafc !important;
+
+    border-radius:18px !important;
+
+    min-height:58px;
+
+    padding:14px 18px !important;
+
+    transition:all .25s ease;
+}
+
+textarea.form-control{
+    min-height:170px;
+}
+
+.form-control:focus,
+.form-select:focus{
+
+    background:white !important;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 0 0 4px rgba(79,70,229,.10),
+        0 12px 24px rgba(79,70,229,.10) !important;
+}
+
+/* ERRORS */
+
+.errorlist{
+    list-style:none;
+    padding:0;
+    margin-top:.5rem;
+    color:#dc2626;
+    font-size:.82rem;
+}
+
+/* BUTTONS */
+
+.btn-cancel{
+
+    border:none;
+
+    background:#e2e8f0;
+
+    color:#334155;
+
+    font-weight:600;
+
+    padding:14px 28px;
+
+    border-radius:16px;
+
+    transition:.25s;
+}
+
+.btn-cancel:hover{
+    background:#cbd5e1;
+}
+
+.btn-save{
+
+    border:none;
+
+    color:white;
+
+    font-weight:700;
+
+    padding:14px 30px;
+
+    border-radius:16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #4f46e5
+        );
+
+    box-shadow:
+        0 10px 25px rgba(79,70,229,.25);
+
+    transition:.25s;
+}
+
+.btn-save:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 20px 40px rgba(79,70,229,.30);
+}
+
+/* ICON CIRCLE */
+
+.icon-circle{
+    width:58px;
+    height:58px;
+
+    border-radius:18px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #4f46e5
+        );
+
+    color:white;
+    font-size:1.4rem;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-xl-8 col-lg-9">
+
+            <div class="ticket-hero d-flex justify-content-between align-items-center">
+
+                <div>
+
+                    <h2>
+                        {% if object %}
+                            Edit Ticket
+                        {% else %}
+                            Create New Ticket
+                        {% endif %}
+                    </h2>
+
+                    <p>
+                        Manage support requests and asset-related incidents.
+                    </p>
+
+                </div>
+
+                <div class="hero-badge">
+                    Asset Management System
+                </div>
+
+            </div>
+
+            <div class="card form-card">
+
+                <div class="form-header d-flex justify-content-between align-items-center">
+
+                    <div>
+                        <h4>Ticket Information</h4>
+                        <span>Fill in the details below</span>
+                    </div>
+
+                    <div class="icon-circle">
+                        <i class="bi bi-ticket-detailed"></i>
+                    </div>
+
+                </div>
+
+                <div class="form-section">
+
+                    <form method="post" enctype="multipart/form-data">
+
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label class="form-label">{{ form.title.label }}</label>
+                            {{ form.title }}
+                            {{ form.title.errors }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">{{ form.description.label }}</label>
+                            {{ form.description }}
+                            {{ form.description.errors }}
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">{{ form.asset.label }}</label>
+                                {{ form.asset }}
+                                {{ form.asset.errors }}
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">{{ form.priority.label }}</label>
+                                {{ form.priority }}
+                                {{ form.priority.errors }}
+                            </div>
+
+                        </div>
+
+                        {% if form.status %}
+                        <div class="row">
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">{{ form.status.label }}</label>
+                                {{ form.status }}
+                                {{ form.status.errors }}
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">{{ form.assigned_to.label }}</label>
+                                {{ form.assigned_to }}
+                                {{ form.assigned_to.errors }}
+                            </div>
+
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-end gap-3 mt-5">
+
+                            <a href="{% url 'ticket-list' %}"
+                               class="btn btn-cancel">
+                                Cancel
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-save">
+
+                                <i class="bi bi-check-circle-fill me-2"></i>
+
+                                {% if object %}
+                                    Save Changes
+                                {% else %}
+                                    Create Ticket
+                                {% endif %}
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+```
