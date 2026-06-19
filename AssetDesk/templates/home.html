@@ -1,0 +1,893 @@
+{% extends "base.html" %}
+
+{% block title %}Asset Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root{
+        --landing-dark: #0f172a;
+        --landing-muted: #64748b;
+        --landing-surface: rgba(255,255,255,.62);
+        --landing-surface-strong: rgba(255,255,255,.82);
+        --landing-border: rgba(255,255,255,.38);
+    }
+
+    .landing-shell{
+        position: relative;
+        overflow: hidden;
+        padding: 1rem 0 3rem;
+    }
+
+    .landing-shell::before,
+    .landing-shell::after{
+        content:"";
+        position:absolute;
+        border-radius: 50%;
+        pointer-events:none;
+        filter: blur(18px);
+        opacity: .55;
+        z-index: 0;
+    }
+
+    .landing-shell::before{
+        width: 420px;
+        height: 420px;
+        top: -120px;
+        right: -140px;
+        background: radial-gradient(circle, rgba(99,102,241,.25), rgba(99,102,241,0) 68%);
+    }
+
+    .landing-shell::after{
+        width: 360px;
+        height: 360px;
+        left: -140px;
+        bottom: 120px;
+        background: radial-gradient(circle, rgba(16,185,129,.18), rgba(16,185,129,0) 68%);
+    }
+
+    .hero-wrap{
+        position: relative;
+        z-index: 1;
+        min-height: 86vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-card{
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--landing-border);
+        border-radius: 36px;
+        background:
+            radial-gradient(circle at top right, rgba(99,102,241,.14), transparent 32%),
+            radial-gradient(circle at bottom left, rgba(16,185,129,.12), transparent 28%),
+            rgba(255,255,255,.56);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        box-shadow: 0 30px 80px rgba(15,23,42,.12);
+    }
+
+    .hero-card::before{
+        content:"";
+        position:absolute;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        right: -90px;
+        top: -110px;
+        background: rgba(99,102,241,.08);
+    }
+
+    .hero-card::after{
+        content:"";
+        position:absolute;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        left: -90px;
+        bottom: -110px;
+        background: rgba(37,99,235,.06);
+    }
+
+    .hero-inner{
+        position: relative;
+        z-index: 1;
+        padding: 3.5rem;
+    }
+
+    .landing-badge{
+        display:inline-flex;
+        align-items:center;
+        gap:.55rem;
+        padding:.7rem 1rem;
+        border-radius:999px;
+        background: rgba(99,102,241,.10);
+        color:#4f46e5;
+        font-weight:800;
+        font-size:.86rem;
+        letter-spacing:.2px;
+        margin-bottom: 1.3rem;
+        box-shadow: 0 8px 24px rgba(99,102,241,.08);
+    }
+
+    .hero-title{
+        font-size: clamp(2.7rem, 5.8vw, 5.4rem);
+        line-height: .98;
+        font-weight: 900;
+        letter-spacing: -2px;
+        color: var(--landing-dark);
+        margin-bottom: 1rem;
+        max-width: 11ch;
+    }
+
+    .hero-title .accent{
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .hero-text{
+        max-width: 760px;
+        font-size: 1.08rem;
+        line-height: 1.95;
+        color: var(--landing-muted);
+        margin-bottom: 1.7rem;
+    }
+
+    .hero-actions{
+        display:flex;
+        flex-wrap:wrap;
+        gap:.85rem;
+        margin-top: 1.5rem;
+    }
+
+    .hero-btn{
+        border-radius: 18px;
+        padding: .92rem 1.2rem;
+        font-weight: 800;
+        border: none;
+        transition: .22s ease;
+        box-shadow: 0 12px 28px rgba(15,23,42,.12);
+    }
+
+    .hero-btn:hover{
+        transform: translateY(-3px);
+    }
+
+    .hero-btn-primary{
+        background: linear-gradient(135deg, #2563eb, #4f46e5);
+        color: #fff;
+    }
+
+    .hero-btn-primary:hover{
+        color:#fff;
+        box-shadow: 0 16px 34px rgba(37,99,235,.22);
+    }
+
+    .hero-btn-soft{
+        background: rgba(255,255,255,.82);
+        color: var(--landing-dark);
+        border: 1px solid rgba(226,232,240,.9);
+    }
+
+    .hero-btn-soft:hover{
+        color: var(--landing-dark);
+        box-shadow: 0 16px 34px rgba(15,23,42,.08);
+    }
+
+    .hero-meta{
+        display:flex;
+        flex-wrap:wrap;
+        gap:.75rem;
+        margin-top: 1.6rem;
+    }
+
+    .meta-pill{
+        display:inline-flex;
+        align-items:center;
+        gap:.45rem;
+        padding:.58rem .88rem;
+        border-radius:999px;
+        background: rgba(255,255,255,.72);
+        border: 1px solid rgba(226,232,240,.85);
+        color: #334155;
+        font-size:.9rem;
+        font-weight: 700;
+        box-shadow: 0 10px 24px rgba(15,23,42,.05);
+    }
+
+    .hero-visual{
+        position: relative;
+        z-index: 1;
+        padding: 3.5rem 3.5rem 3.5rem 0;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        height:100%;
+    }
+
+    .mockup-card{
+        width: 100%;
+        max-width: 430px;
+        border-radius: 30px;
+        padding: 1.15rem;
+        background: rgba(255,255,255,.70);
+        border: 1px solid rgba(255,255,255,.42);
+        box-shadow: 0 24px 60px rgba(15,23,42,.12);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        transform: perspective(1200px) rotateY(-8deg) rotateX(5deg);
+    }
+
+    .mockup-top{
+        display:flex;
+        align-items:center;
+        gap:.45rem;
+        margin-bottom: 1rem;
+    }
+
+    .mockup-dot{
+        width:11px;
+        height:11px;
+        border-radius: 50%;
+        background:#cbd5e1;
+    }
+
+    .mockup-dot:nth-child(1){ background:#ef4444; }
+    .mockup-dot:nth-child(2){ background:#f59e0b; }
+    .mockup-dot:nth-child(3){ background:#22c55e; }
+
+    .mockup-panel{
+        border-radius: 22px;
+        background: linear-gradient(180deg, rgba(248,250,252,.96), rgba(255,255,255,.9));
+        border: 1px solid rgba(226,232,240,.95);
+        padding: 1rem;
+    }
+
+    .mockup-banner{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:1rem;
+        padding: 1rem;
+        border-radius: 20px;
+        color:#fff;
+        background: linear-gradient(135deg, #0f172a, #1e3a8a 55%, #2563eb);
+        box-shadow: 0 16px 30px rgba(15,23,42,.18);
+    }
+
+    .mockup-banner h5{
+        margin:0;
+        font-weight: 900;
+        letter-spacing: -.3px;
+    }
+
+    .mockup-banner p{
+        margin: .2rem 0 0;
+        opacity:.85;
+        font-size: .85rem;
+    }
+
+    .mockup-avatar{
+        width:52px;
+        height:52px;
+        border-radius: 50%;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.18);
+        font-size: 1.2rem;
+    }
+
+    .mockup-grid{
+        display:grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: .85rem;
+        margin-top: .85rem;
+    }
+
+    .mockup-stat{
+        border-radius: 18px;
+        padding: .95rem;
+        background: rgba(255,255,255,.95);
+        border: 1px solid rgba(226,232,240,.96);
+    }
+
+    .mockup-stat-label{
+        font-size:.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color:#94a3b8;
+        font-weight:800;
+        margin-bottom: .2rem;
+    }
+
+    .mockup-stat-value{
+        font-size: 1.35rem;
+        font-weight: 900;
+        color:#0f172a;
+        line-height:1.1;
+    }
+
+    .mockup-stat-note{
+        margin-top: .18rem;
+        font-size: .82rem;
+        color:#64748b;
+    }
+
+    .section-title{
+        font-size: clamp(1.45rem, 2.2vw, 2.2rem);
+        font-weight: 900;
+        letter-spacing: -.8px;
+        color: var(--landing-dark);
+        margin-bottom: .45rem;
+    }
+
+    .section-subtitle{
+        color: var(--landing-muted);
+        max-width: 860px;
+        margin: 0 auto;
+        line-height: 1.8;
+    }
+
+    .feature-card{
+        position: relative;
+        height: 100%;
+        border: 1px solid rgba(255,255,255,.4);
+        border-radius: 24px;
+        background: rgba(255,255,255,.64);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 14px 35px rgba(15,23,42,.08);
+        transition: transform .22s ease, box-shadow .22s ease;
+        overflow:hidden;
+    }
+
+    .feature-card:hover{
+        transform: translateY(-6px);
+        box-shadow: 0 20px 45px rgba(15,23,42,.12);
+    }
+
+    .feature-card::before{
+        content:"";
+        position:absolute;
+        inset:0;
+        background: linear-gradient(135deg, rgba(255,255,255,.16), transparent 60%);
+        pointer-events:none;
+    }
+
+    .feature-body{
+        position: relative;
+        z-index: 1;
+        padding: 1.35rem;
+    }
+
+    .feature-icon{
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:#fff;
+        font-size: 1.25rem;
+        box-shadow: 0 12px 26px rgba(15,23,42,.12);
+        margin-bottom: 1rem;
+    }
+
+    .icon-blue{ background: linear-gradient(135deg, #2563eb, #60a5fa); }
+    .icon-green{ background: linear-gradient(135deg, #16a34a, #4ade80); }
+    .icon-orange{ background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+    .icon-purple{ background: linear-gradient(135deg, #6d28d9, #a855f7); }
+
+    .feature-title{
+        font-size: 1.08rem;
+        font-weight: 850;
+        color: var(--landing-dark);
+        margin-bottom: .35rem;
+    }
+
+    .feature-text{
+        color: var(--landing-muted);
+        line-height: 1.7;
+        margin-bottom: 0;
+        font-size: .95rem;
+    }
+
+    .numbers-card{
+        border: 1px solid rgba(255,255,255,.38);
+        border-radius: 28px;
+        background: rgba(255,255,255,.62);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 14px 35px rgba(15,23,42,.08);
+        padding: 1.15rem;
+        height: 100%;
+    }
+
+    .numbers-label{
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 900;
+        color: #94a3b8;
+        margin-bottom: .35rem;
+    }
+
+    .numbers-value{
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: -.8px;
+        color: var(--landing-dark);
+        line-height: 1;
+    }
+
+    .numbers-note{
+        margin-top: .25rem;
+        color: var(--landing-muted);
+        font-size: .9rem;
+        line-height: 1.55;
+    }
+
+    .info-card{
+        border: 1px solid rgba(255,255,255,.38);
+        border-radius: 28px;
+        background: rgba(255,255,255,.62);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 14px 35px rgba(15,23,42,.08);
+        padding: 1.35rem;
+        height: 100%;
+    }
+
+    .info-item{
+        display:flex;
+        align-items:flex-start;
+        gap:.9rem;
+        padding: .85rem 0;
+        border-bottom: 1px solid rgba(226,232,240,.9);
+    }
+
+    .info-item:last-child{
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .info-badge{
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:#fff;
+        flex: 0 0 auto;
+        box-shadow: 0 10px 20px rgba(15,23,42,.10);
+    }
+
+    .info-title{
+        font-weight: 850;
+        color: var(--landing-dark);
+        margin-bottom: .12rem;
+    }
+
+    .info-text{
+        margin: 0;
+        color: var(--landing-muted);
+        font-size: .92rem;
+        line-height: 1.6;
+    }
+
+    .cta-card{
+        position: relative;
+        overflow: hidden;
+        border: none;
+        border-radius: 34px;
+        padding: 2.2rem;
+        color:#fff;
+        background:
+            radial-gradient(circle at top right, rgba(255,255,255,.16), transparent 32%),
+            radial-gradient(circle at bottom left, rgba(255,255,255,.08), transparent 28%),
+            linear-gradient(135deg, #0f172a 0%, #1e3a8a 45%, #2563eb 100%);
+        box-shadow: 0 26px 70px rgba(15,23,42,.18);
+    }
+
+    .cta-card::before{
+        content:"";
+        position:absolute;
+        width: 260px;
+        height: 260px;
+        border-radius:50%;
+        background: rgba(255,255,255,.08);
+        top:-120px;
+        right:-80px;
+    }
+
+    .cta-card::after{
+        content:"";
+        position:absolute;
+        width: 200px;
+        height: 200px;
+        border-radius:50%;
+        background: rgba(255,255,255,.06);
+        bottom:-100px;
+        left:-60px;
+    }
+
+    .cta-inner{
+        position: relative;
+        z-index: 1;
+    }
+
+    .cta-title{
+        font-size: clamp(1.6rem, 2.5vw, 2.5rem);
+        font-weight: 900;
+        letter-spacing: -.8px;
+        margin-bottom: .45rem;
+    }
+
+    .cta-text{
+        max-width: 840px;
+        color: rgba(255,255,255,.82);
+        line-height: 1.8;
+        margin-bottom: 1.2rem;
+    }
+
+    .cta-actions{
+        display:flex;
+        flex-wrap:wrap;
+        gap:.75rem;
+    }
+
+    .cta-btn{
+        border-radius: 16px;
+        padding: .9rem 1.15rem;
+        font-weight: 800;
+        border: none;
+        transition: .22s ease;
+        box-shadow: 0 12px 28px rgba(15,23,42,.16);
+    }
+
+    .cta-btn:hover{
+        transform: translateY(-3px);
+    }
+
+    .cta-btn-light{
+        background: rgba(255,255,255,.94);
+        color: #0f172a;
+    }
+
+    .cta-btn-light:hover{
+        color: #0f172a;
+    }
+
+    .cta-btn-outline{
+        background: rgba(255,255,255,.10);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .cta-btn-outline:hover{
+        color: #fff;
+        background: rgba(255,255,255,.14);
+    }
+
+    .landing-footer{
+        text-align:center;
+        color: var(--landing-muted);
+        margin-top: 2rem;
+        font-size: .95rem;
+    }
+
+    .landing-footer strong{
+        color: var(--landing-dark);
+    }
+
+    @media (max-width: 991.98px){
+        .hero-inner{
+            padding: 2.2rem;
+        }
+
+        .hero-visual{
+            padding: 0 2.2rem 2.2rem;
+        }
+
+        .mockup-card{
+            transform: none;
+            max-width: 100%;
+        }
+    }
+
+    @media (max-width: 767.98px){
+        .hero-wrap{
+            min-height: auto;
+        }
+
+        .hero-inner{
+            padding: 1.35rem;
+        }
+
+        .hero-visual{
+            padding: 0 1.35rem 1.35rem;
+        }
+
+        .hero-title{
+            max-width: 100%;
+        }
+
+        .cta-card{
+            padding: 1.35rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="landing-shell">
+    <div class="container hero-wrap">
+        <div class="card hero-card w-100">
+            <div class="row g-0 align-items-stretch">
+                <div class="col-lg-7">
+                    <div class="hero-inner">
+                        <div class="landing-badge">
+                            <i class="bi bi-shield-check"></i>
+                            Enterprise Asset Platform
+                        </div>
+
+                        <h1 class="hero-title">
+                            Manage assets with <span class="accent">clarity</span> and control.
+                        </h1>
+
+                        <p class="hero-text">
+                            Asset Management System is a modern internal platform for tracking company devices, coordinating maintenance, handling support tickets, and turning operational data into clear reports.
+                        </p>
+
+                        <div class="hero-actions">
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'dashboard' %}" class="btn hero-btn hero-btn-primary">
+                                    <i class="bi bi-speedometer2 me-2"></i>
+                                    Open Dashboard
+                                </a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="btn hero-btn hero-btn-primary">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                                    Access System
+                                </a>
+                            {% endif %}
+
+                            <a href="#features" class="btn hero-btn hero-btn-soft">
+                                <i class="bi bi-arrow-down-circle me-2"></i>
+                                Explore Features
+                            </a>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="hero-visual">
+                        <div class="mockup-card">
+                            <div class="mockup-top">
+                                <span class="mockup-dot"></span>
+                                <span class="mockup-dot"></span>
+                                <span class="mockup-dot"></span>
+                            </div>
+
+                            <div class="mockup-panel">
+                                <div class="mockup-banner">
+                                    <div>
+                                        <h5>AMS Overview</h5>
+                                        <p>Live operational dashboard</p>
+                                    </div>
+                                    <div class="mockup-avatar">
+                                        <i class="bi bi-graph-up-arrow"></i>
+                                    </div>
+                                </div>
+
+                                <div class="mockup-grid">
+                                    <div class="mockup-stat">
+                                        <div class="mockup-stat-label">Assets</div>
+                                        <div class="mockup-stat-value">Inventory</div>
+                                        <div class="mockup-stat-note">Lifecycle and allocation</div>
+                                    </div>
+
+                                    <div class="mockup-stat">
+                                        <div class="mockup-stat-label">Support</div>
+                                        <div class="mockup-stat-value">Tickets</div>
+                                        <div class="mockup-stat-note">Fast issue handling</div>
+                                    </div>
+
+                                    <div class="mockup-stat">
+                                        <div class="mockup-stat-label">Maintenance</div>
+                                        <div class="mockup-stat-value">Logs</div>
+                                        <div class="mockup-stat-note">Track service activity</div>
+                                    </div>
+
+                                    <div class="mockup-stat">
+                                        <div class="mockup-stat-label">Insights</div>
+                                        <div class="mockup-stat-value">Reports</div>
+                                        <div class="mockup-stat-note">Charts and exports</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="position-absolute" style="left: 50%; transform: translateX(-50%); bottom: -16px; z-index: 2;">
+            <a href="#features" class="btn btn-light rounded-pill shadow-sm px-3 py-2 border-0">
+                <i class="bi bi-chevron-down"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="container mt-5 pt-3" id="features">
+        <div class="text-center mb-4">
+            <div class="section-title">Core capabilities</div>
+            <p class="section-subtitle">
+                A compact internal platform designed to keep assets organized, requests visible, and maintenance work traceable.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-body">
+                        <div class="feature-icon icon-blue">
+                            <i class="bi bi-laptop"></i>
+                        </div>
+                        <div class="feature-title">Asset Tracking</div>
+                        <p class="feature-text">
+                            Follow every device through its lifecycle from entry to assignment, repair, and retirement.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-body">
+                        <div class="feature-icon icon-green">
+                            <i class="bi bi-ticket-detailed"></i>
+                        </div>
+                        <div class="feature-title">Support Tickets</div>
+                        <p class="feature-text">
+                            Handle incidents and user requests with a clean, structured ticket workflow.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-body">
+                        <div class="feature-icon icon-orange">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <div class="feature-title">Maintenance</div>
+                        <p class="feature-text">
+                            Record repair jobs and preventive maintenance to keep operations running smoothly.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-body">
+                        <div class="feature-icon icon-purple">
+                            <i class="bi bi-bar-chart-line"></i>
+                        </div>
+                        <div class="feature-title">Reports</div>
+                        <p class="feature-text">
+                            Review status distributions, analyze workload, and export professional PDF reports.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5 pt-2">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="numbers-card">
+                    <div class="numbers-label">Fast access</div>
+                    <div class="numbers-value">1</div>
+                    <div class="numbers-note">Single dashboard for assets, tickets, and maintenance.</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="numbers-card">
+                    <div class="numbers-label">Operational focus</div>
+                    <div class="numbers-value">24/7</div>
+                    <div class="numbers-note">Keep the system visible whenever users need support.</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="numbers-card">
+                    <div class="numbers-label">Management ready</div>
+                    <div class="numbers-value">PDF</div>
+                    <div class="numbers-note">Printable reporting for quick reviews and sharing.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5 pt-2">
+        <div class="row g-4 align-items-stretch">
+            <div class="col-lg-6">
+                <div class="info-card">
+                    <div class="section-title mb-2">Why this system feels complete</div>
+                    <p class="section-subtitle" style="margin:0 0 1rem 0;">
+                        It is not just a CRUD app. It behaves like a real internal platform with role-based views, lifecycle tracking, analytics, and reporting.
+                    </p>
+
+                    <div class="info-item">
+                        <div class="info-badge icon-blue"><i class="bi bi-person-badge"></i></div>
+                        <div>
+                            <div class="info-title">Role-aware dashboard</div>
+                            <p class="info-text">Staff and employees see different actions and different summaries.</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-badge icon-green"><i class="bi bi-diagram-3"></i></div>
+                        <div>
+                            <div class="info-title">Connected workflows</div>
+                            <p class="info-text">Assets, tickets, assignments, and maintenance stay linked together.</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-badge icon-orange"><i class="bi bi-file-earmark-pdf"></i></div>
+                        <div>
+                            <div class="info-title">Export-ready reports</div>
+                            <p class="info-text">Management can review printable summaries without extra manual work.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="cta-card h-100">
+                    <div class="cta-inner">
+                        <div class="cta-title">Ready to enter the system?</div>
+                        <p class="cta-text">
+                            Access your dashboard, explore live operational data, and manage company assets from one clean internal platform.
+                        </p>
+
+                        <div class="cta-actions">
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'dashboard' %}" class="btn cta-btn cta-btn-light">
+                                    <i class="bi bi-speedometer2 me-2"></i>
+                                    Go to Dashboard
+                                </a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="btn cta-btn cta-btn-light">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                                    Sign in now
+                                </a>
+                            {% endif %}
+
+                            <a href="#features" class="btn cta-btn cta-btn-outline">
+                                <i class="bi bi-arrow-up-circle me-2"></i>
+                                Explore again
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+{% endblock %}

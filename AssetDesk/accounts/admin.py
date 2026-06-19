@@ -15,29 +15,47 @@ class DepartmentAdmin(admin.ModelAdmin):
 class CustomUserAdmin(UserAdmin):
 
     fieldsets = UserAdmin.fieldsets + (
-        ("Organization Info", {
-            "fields": (
-                "employee_id",
-                "role",
-                "phone_number",
-                "department",
-                "position",
-                "avatar",
-            )
-        }),
+        (
+            "Organization Info",
+            {
+                "fields": (
+                    "employee_id",
+                    "role",
+                    "phone_number",
+                    "department",
+                    "position",
+                    "avatar",
+                )
+            },
+        ),
     )
 
-    add_fieldsets = UserAdmin.add_fieldsets + (
-        ("Organization Info", {
-            "fields": (
-                "employee_id",
-                "role",
-                "phone_number",
-                "department",
-                "position",
-                "avatar",
-            )
-        }),
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "username",
+                    "email",
+                    "password1",
+                    "password2",
+                ),
+            },
+        ),
+        (
+            "Organization Info",
+            {
+                "fields": (
+                    "employee_id",
+                    "role",
+                    "phone_number",
+                    "department",
+                    "position",
+                    "avatar",
+                )
+            },
+        ),
     )
 
     list_display = (

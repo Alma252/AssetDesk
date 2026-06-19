@@ -6,6 +6,9 @@ from django.shortcuts import render, redirect
 from assets.models import Asset, AssetAssignment
 from tickets.models import Ticket
 from maintenance.models import MaintenanceLog
+from django.views.generic import TemplateView
+from reportlab.pdfgen import canvas
+from django.http import HttpResponse
 
 
 class LoginView(View):
@@ -219,4 +222,173 @@ class DashboardView(LoginRequiredMixin, View):
             request,
             self.template_name,
             context,
+        )
+
+class ReportsView(LoginRequiredMixin, TemplateView):
+
+    template_name = "accounts/reports.html"
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        context["total_assets"] = Asset.objects.count()
+
+        context["available_assets"] = Asset.objects.filter(
+            status=Asset.AssetStatus.AVAILABLE
+        ).count()
+
+        context["assigned_assets"] = Asset.objects.filter(
+            status=Asset.AssetStatus.ASSIGNED
+        ).count()
+
+        context["repair_assets"] = Asset.objects.filter(
+            status=Asset.AssetStatus.UNDER_REPAIR
+        ).count()
+
+        context["retired_assets"] = Asset.objects.filter(
+            status=Asset.AssetStatus.RETIRED
+        ).count()
+
+        context["open_tickets"] = Ticket.objects.filter(
+            status=Ticket.Status.OPEN
+        ).count()
+
+        context["in_progress_tickets"] = Ticket.objects.filter(
+            status=Ticket.Status.IN_PROGRESS
+        ).count()
+
+        context["resolved_tickets"] = Ticket.objects.filter(
+            status=Ticket.Status.RESOLVED
+        ).count()
+
+        context["closed_tickets"] = Ticket.objects.filter(
+            status=Ticket.Status.CLOSED
+        ).count()
+
+        context["pending_maintenance"] = MaintenanceLog.objects.filter(
+            status=MaintenanceLog.Status.PENDING
+        ).count()
+
+        context["active_maintenance"] = MaintenanceLog.objects.filter(
+            status=MaintenanceLog.Status.IN_PROGRESS
+        ).count()
+
+        context["completed_maintenance"] = MaintenanceLog.objects.filter(
+            status=MaintenanceLog.Status.COMPLETED
+        ).count()
+
+        context["asset_chart"] = [
+            context["available_assets"],
+            context["assigned_assets"],
+            context["repair_assets"],
+            context["retired_assets"],
+        ]
+
+        context["ticket_chart"] = [
+            context["open_tickets"],
+            context["in_progress_tickets"],
+            context["resolved_tickets"],
+            context["closed_tickets"],
+        ]
+
+        context["maintenance_chart"] = [
+            context["pending_maintenance"],
+            context["active_maintenance"],
+            context["completed_maintenance"],
+        ]
+
+        return context
+
+
+class ReportPDFView(View):
+
+    def get(self, request):
+
+        response = HttpResponse(
+            content_type="application/pdf"
+        )
+
+        response["Content-Disposition"] = (
+            'attachment; filename="AMS_Report.pdf"'
+        )
+
+        p = canvas.Canvas(response)
+
+        y = 800
+
+        p.setFont("Helvetica-Bold", 18)
+        p.drawString(
+            50,
+            y,
+            "Asset Management Report"
+        )
+
+        y -= 50
+
+        p.setFont("Helvetica", 12)
+
+        p.drawString(
+            50,
+            y,
+            f"Total Assets: {Asset.objects.count()}"
+        )
+
+        y -= 25
+
+        p.drawString(
+            50,
+            y,
+            f"Available Assets: {Asset.objects.filter(status='AVAILABLE').count()}"
+        )
+
+        y -= 25
+
+        p.drawString(
+            50,
+            y,
+            f"Assigned Assets: {Asset.objects.filter(status='ASSIGNED').count()}"
+        )
+
+        y -= 25
+
+        p.drawString(
+            50,
+            y,
+            f"Under Repair: {Asset.objects.filter(status='UNDER_REPAIR').count()}"
+        )
+
+        y -= 25
+
+        p.drawString(
+            50,
+            y,
+            f"Open Tickets: {Ticket.objects.filter(status='OPEN').count()}"
+        )
+
+        y -= 25
+
+        p.drawString(
+            50,
+            y,
+            f"Maintenance Logs: {MaintenanceLog.objects.count()}"
+        )
+
+        p.save()
+
+        return response
+
+
+class HomeView(View):
+
+    template_name = "home.html"
+
+    def get(self, request):
+
+        if request.user.is_authenticated:
+            return redirect("dashboard")
+
+        return render(
+            request,
+            self.template_name,
         )
