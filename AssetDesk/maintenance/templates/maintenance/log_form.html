@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}{{ form_title }} — AMS{% endblock %}
+
+{% block extra_css %}
+<style>
+
+.form-card {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.06);
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: .9rem;
+    color: #475569;
+}
+
+.errorlist {
+    list-style: none;
+    padding: 0;
+    margin: .25rem 0 0;
+    color: #dc2626;
+    font-size: .82rem;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <h4 class="fw-bold mb-4">
+                <i class="bi bi-tools"></i> {{ form_title }}
+            </h4>
+
+            <div class="card form-card">
+                <div class="card-body p-4">
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.asset.label }}</label>
+                                {{ form.asset }}
+                                {{ form.asset.errors }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.schedule.label }}</label>
+                                {{ form.schedule }}
+                                {{ form.schedule.errors }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.maintenance_type.label }}</label>
+                                {{ form.maintenance_type }}
+                                {{ form.maintenance_type.errors }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.priority.label }}</label>
+                                {{ form.priority }}
+                                {{ form.priority.errors }}
+                            </div>
+                        </div>
+
+                        {% if form.status %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.status.label }}</label>
+                                {{ form.status }}
+                                {{ form.status.errors }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.performed_by.label }}</label>
+                                {{ form.performed_by }}
+                                {{ form.performed_by.errors }}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.planned_date.label }}</label>
+                                {{ form.planned_date }}
+                                {{ form.planned_date.errors }}
+                            </div>
+
+                            {% if form.completed_date %}
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.completed_date.label }}</label>
+                                {{ form.completed_date }}
+                                {{ form.completed_date.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.vendor.label }}</label>
+                                {{ form.vendor }}
+                                {{ form.vendor.errors }}
+                            </div>
+
+                            {% if form.cost %}
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.cost.label }}</label>
+                                {{ form.cost }}
+                                {{ form.cost.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.notes.label }}</label>
+                            {{ form.notes }}
+                            {{ form.notes.errors }}
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a href="{% url 'maintenance-log-list' %}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> {{ btn_label }}
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

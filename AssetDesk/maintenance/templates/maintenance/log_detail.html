@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Maintenance — {{ log.asset.asset_code }} — AMS{% endblock %}
+
+{% block extra_css %}
+<style>
+
+.log-header {
+    background: linear-gradient(135deg, #0f172a, #1e3a8a);
+    color: white;
+    padding: 2rem;
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+}
+
+.info-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.05);
+}
+
+.badge-pill {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.badge-priority-low      { background: #e2e8f0; color: #475569; }
+.badge-priority-medium   { background: #dbeafe; color: #1d4ed8; }
+.badge-priority-high     { background: #fef3c7; color: #b45309; }
+.badge-priority-critical { background: #fee2e2; color: #b91c1c; }
+
+.badge-status-pending     { background: #f1f5f9; color: #64748b; }
+.badge-status-in_progress { background: #fef3c7; color: #b45309; }
+.badge-status-completed   { background: #dcfce7; color: #15803d; }
+.badge-status-cancelled   { background: #fee2e2; color: #b91c1c; }
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: .7rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: #94a3b8;
+    font-size: .85rem;
+}
+
+.info-value {
+    font-weight: 500;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="log-header">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <div class="text-white-50 small mb-1">{{ log.asset.asset_code }}</div>
+                <h3 class="fw-bold mb-2">{{ log.asset.name }}</h3>
+                <div class="d-flex gap-2">
+                    <span class="badge-pill badge-priority-{{ log.priority }}">
+                        {{ log.get_priority_display }}
+                    </span>
+                    <span class="badge-pill badge-status-{{ log.status }}">
+                        {{ log.get_status_display }}
+                    </span>
+                    {% if log.is_overdue %}
+                        <span class="badge-pill bg-danger text-white">
+                            <i class="bi bi-exclamation-triangle-fill"></i> Overdue
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="text-end text-white-50 small">
+                <div>{{ log.get_maintenance_type_display }}</div>
+                {% if log.reported_by %}
+                    <div>Reported by {{ log.reported_by }}</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- LEFT -->
+        <div class="col-lg-8">
+
+            <div class="card info-card mb-4">
+                <div class="card-body p-4">
+                    <h6 class="text-muted text-uppercase small fw-bold mb-3">Details</h6>
+
+                    <div class="info-row">
+                        <span class="info-label">Planned Date</span>
+                        <span class="info-value">{{ log.planned_date|date:"F d, Y" }}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Completed Date</span>
+                        <span class="info-value">{{ log.completed_date|date:"F d, Y"|default:"—" }}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Performed By</span>
+                        <span class="info-value">{{ log.performed_by|default:"—" }}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Vendor</span>
+                        <span class="info-value">{{ log.vendor|default:"—" }}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Cost</span>
+                        <span class="info-value">
+                            {% if log.cost %}${{ log.cost }}{% else %}—{% endif %}
+                        </span>
+                    </div>
+
+                    {% if log.schedule %}
+                    <div class="info-row">
+                        <span class="info-label">Related Schedule</span>
+                        <span class="info-value">{{ log.schedule.title }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if log.notes %}
+            <div class="card info-card">
+                <div class="card-body p-4">
+                    <h6 class="text-muted text-uppercase small fw-bold mb-3">Notes</h6>
+                    <p class="mb-0">{{ log.notes|linebreaksbr }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="col-lg-4">
+
+            <div class="card info-card">
+                <div class="card-body p-4">
+                    <h6 class="text-muted text-uppercase small fw-bold mb-3">Actions</h6>
+
+                    <div class="d-flex flex-column gap-2">
+
+                        <a href="{% url 'maintenance-log-update' log.pk %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-pencil"></i> Edit Log
+                        </a>
+
+                        {% if log.status != "completed" %}
+                        <form method="post" action="{% url 'maintenance-log-complete' log.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm w-100">
+                                <i class="bi bi-check-circle"></i> Mark Completed
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        <a href="{% url 'maintenance-log-delete' log.pk %}" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash"></i> Delete Log
+                        </a>
+
+                        <a href="{% url 'asset-detail' log.asset.pk %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pc-display"></i> View Asset
+                        </a>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

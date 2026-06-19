@@ -214,6 +214,14 @@
         box-shadow: 0 18px 38px rgba(15, 23, 42, .13);
     }
 
+    .stat-card::before{
+        content:"";
+        position:absolute;
+        inset:0;
+        background: linear-gradient(135deg, rgba(255,255,255,.12), transparent);
+        pointer-events:none;
+    }
+
     .stat-card .stat-body{
         padding: 1.35rem;
         position: relative;
@@ -321,6 +329,7 @@
     .qi-dark{ background: linear-gradient(135deg, #0f172a, #334155); }
     .qi-purple{ background: linear-gradient(135deg, #6d28d9, #a855f7); }
     .qi-orange{ background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+    .qi-red{ background: linear-gradient(135deg, #dc2626, #f87171); }
 
     .quick-title{
         font-weight: 800;
@@ -431,6 +440,7 @@
         border-radius: 999px;
         font-size: .8rem;
         font-weight: 700;
+        white-space: nowrap;
     }
 
     .status-open{ background: #dbeafe; color: #1d4ed8; }
@@ -466,6 +476,59 @@
         color: var(--ams-muted);
         font-size: .9rem;
         line-height: 1.65;
+    }
+
+    .attention-card{
+        border: none;
+        border-radius: 24px;
+        background:
+            radial-gradient(circle at top right, rgba(220, 38, 38, .08), transparent 35%),
+            #fff;
+        box-shadow: 0 14px 35px rgba(15, 23, 42, .07);
+    }
+
+    .attention-pill{
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .5rem .8rem;
+        border-radius: 999px;
+        font-size: .82rem;
+        font-weight: 800;
+        letter-spacing: .2px;
+    }
+
+    .pill-danger{ background:#fee2e2; color:#b91c1c; }
+
+    .maintenance-mini{
+        display:flex;
+        flex-wrap:wrap;
+        gap:.75rem;
+        margin-top:1rem;
+    }
+
+    .maintenance-mini .mini-box{
+        flex: 1 1 180px;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        padding: .95rem 1rem;
+        background: linear-gradient(180deg, #fff, #fbfdff);
+    }
+
+    .mini-label{
+        font-size: .74rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color:#94a3b8;
+        font-weight: 800;
+        margin-bottom: .25rem;
+    }
+
+    .mini-value{
+        font-size: 1.25rem;
+        font-weight: 900;
+        color:#0f172a;
+        line-height: 1.1;
     }
 
     @media (max-width: 991.98px){
@@ -505,7 +568,7 @@
                             Welcome back, {{ user.get_full_name|default:user.username }}
                         </div>
                         <p class="hero-subtitle">
-                            Admin, Manager and IT Expert view. Here you can monitor inventory, assignments and support tickets across the whole system.
+                            Admin, Manager and IT Expert view. Here you can monitor inventory, assignments, support tickets and maintenance activity across the whole system.
                         </p>
                     {% else %}
                         <div class="hero-title">
@@ -564,6 +627,8 @@
     </div>
 
     {% if is_staff_dashboard %}
+        
+
         <div class="row g-4 mb-4">
             <div class="col-md-6 col-xl">
                 <div class="card stat-card bg-blue">
@@ -753,6 +818,42 @@
                                     <div>
                                         <div class="quick-title">Ticket Center</div>
                                         <p class="quick-desc">Open and manage support tickets</p>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="{% url 'maintenance-log-create' %}" class="quick-item h-100">
+                                    <div class="quick-icon qi-orange">
+                                        <i class="bi bi-tools"></i>
+                                    </div>
+                                    <div>
+                                        <div class="quick-title">New Maintenance</div>
+                                        <p class="quick-desc">Create maintenance record</p>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="{% url 'maintenance-log-list' %}" class="quick-item h-100">
+                                    <div class="quick-icon qi-red">
+                                        <i class="bi bi-clipboard-data"></i>
+                                    </div>
+                                    <div>
+                                        <div class="quick-title">Maintenance Logs</div>
+                                        <p class="quick-desc">Repair history and activities</p>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="{% url 'maintenance-schedule-list' %}" class="quick-item h-100">
+                                    <div class="quick-icon qi-green">
+                                        <i class="bi bi-calendar-check"></i>
+                                    </div>
+                                    <div>
+                                        <div class="quick-title">Schedules</div>
+                                        <p class="quick-desc">Preventive maintenance plans</p>
                                     </div>
                                 </a>
                             </div>
@@ -1012,13 +1113,9 @@
                                             </td>
                                             <td>
                                                 {% if assignment.is_active %}
-                                                    <span class="ticket-pill status-resolved">
-                                                        Active
-                                                    </span>
+                                                    <span class="ticket-pill status-resolved">Active</span>
                                                 {% else %}
-                                                    <span class="ticket-pill status-closed">
-                                                        Returned
-                                                    </span>
+                                                    <span class="ticket-pill status-closed">Returned</span>
                                                 {% endif %}
                                             </td>
                                             <td class="text-end">

@@ -5,7 +5,7 @@ from django.views import View
 from django.shortcuts import render, redirect
 from assets.models import Asset, AssetAssignment
 from tickets.models import Ticket
-
+from maintenance.models import MaintenanceLog
 
 
 class LoginView(View):
@@ -102,10 +102,6 @@ class DashboardView(LoginRequiredMixin, View):
 
         user = request.user
 
-        # =====================================================
-        # STAFF
-        # =====================================================
-
         if user.is_staff_member:
 
             total_assets = Asset.objects.count()
@@ -149,9 +145,14 @@ class DashboardView(LoginRequiredMixin, View):
                 "assigned_to",
             ).order_by("-created_at")[:5]
 
-        # =====================================================
+            open_maintenance = MaintenanceLog.objects.filter(
+                status__in=[
+                    MaintenanceLog.Status.PENDING,
+                    MaintenanceLog.Status.IN_PROGRESS,
+                ]
+            ).count()
+
         # EMPLOYEE
-        # =====================================================
 
         else:
 
@@ -194,6 +195,8 @@ class DashboardView(LoginRequiredMixin, View):
                 created_by=user
             ).order_by("-created_at")[:5]
 
+            open_maintenance = None
+
         context = {
 
             "total_assets": total_assets,
@@ -208,6 +211,8 @@ class DashboardView(LoginRequiredMixin, View):
 
             "open_tickets": open_tickets,
             "recent_tickets": recent_tickets,
+
+            "open_maintenance": open_maintenance,
         }
 
         return render(

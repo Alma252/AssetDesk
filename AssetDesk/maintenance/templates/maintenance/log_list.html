@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Maintenance Logs — AMS{% endblock %}
+
+{% block extra_css %}
+<style>
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.filter-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.05);
+    margin-bottom: 1.5rem;
+}
+
+.log-card {
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.05);
+    margin-bottom: 1rem;
+    transition: .2s;
+}
+
+.log-card:hover {
+    box-shadow: 0 10px 24px rgba(0,0,0,.1);
+    transform: translateY(-2px);
+}
+
+.badge-pill {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+.badge-priority-low      { background: #e2e8f0; color: #475569; }
+.badge-priority-medium   { background: #dbeafe; color: #1d4ed8; }
+.badge-priority-high     { background: #fef3c7; color: #b45309; }
+.badge-priority-critical { background: #fee2e2; color: #b91c1c; }
+
+.badge-status-pending     { background: #f1f5f9; color: #64748b; }
+.badge-status-in_progress { background: #fef3c7; color: #b45309; }
+.badge-status-completed   { background: #dcfce7; color: #15803d; }
+.badge-status-cancelled   { background: #fee2e2; color: #b91c1c; }
+
+.overdue-flag {
+    color: #dc2626;
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #94a3b8;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="page-header">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-tools"></i> Maintenance Logs
+        </h3>
+        <div class="d-flex gap-2">
+            <a href="{% url 'maintenance-schedule-list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-calendar-event"></i> Schedules
+            </a>
+            <a href="{% url 'maintenance-log-create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> New Log
+            </a>
+        </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="card filter-card">
+        <div class="card-body p-3">
+            <form method="get" class="row g-2 align-items-end">
+
+                <div class="col-md-4">
+                    <label class="form-label small text-muted mb-1">Search</label>
+                    <input type="text" name="search" class="form-control"
+                           placeholder="Asset code, name, vendor..."
+                           value="{{ search }}">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted mb-1">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All Statuses</option>
+                        {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted mb-1">Priority</label>
+                    <select name="priority" class="form-select">
+                        <option value="">All Priorities</option>
+                        {% for value, label in priority_choices %}
+                            <option value="{{ value }}" {% if current_priority == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-funnel"></i> Filter
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- LIST -->
+    {% if logs %}
+
+        {% for log in logs %}
+        <div class="card log-card">
+            <div class="card-body p-3">
+                <div class="row align-items-center">
+
+                    <div class="col-md-3">
+                        <a href="{% url 'maintenance-log-detail' log.pk %}" class="text-decoration-none fw-semibold text-dark">
+                            {{ log.asset.asset_code }}
+                        </a>
+                        <div class="small text-muted">{{ log.asset.name }}</div>
+                        {% if log.is_overdue %}
+                            <div class="overdue-flag">
+                                <i class="bi bi-exclamation-triangle-fill"></i> Overdue
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="small text-muted">Type</div>
+                        <div>{{ log.get_maintenance_type_display }}</div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <span class="badge-pill badge-priority-{{ log.priority }}">
+                            {{ log.get_priority_display }}
+                        </span>
+                    </div>
+
+                    <div class="col-md-2">
+                        <span class="badge-pill badge-status-{{ log.status }}">
+                            {{ log.get_status_display }}
+                        </span>
+                    </div>
+
+                    <div class="col-md-3 text-md-end">
+                        <div class="small text-muted">Planned</div>
+                        <div>{{ log.planned_date|date:"M d, Y" }}</div>
+                        {% if log.vendor %}
+                            <div class="small text-muted"><i class="bi bi-building"></i> {{ log.vendor }}</div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- PAGINATION -->
+        {% if is_paginated %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&status={{ current_status }}&priority={{ current_priority }}&search={{ search }}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+
+                <li class="page-item disabled">
+                    <span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+                </li>
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&status={{ current_status }}&priority={{ current_priority }}&search={{ search }}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+
+            </ul>
+        </nav>
+        {% endif %}
+
+    {% else %}
+        <div class="empty-state">
+            <i class="bi bi-tools fs-1 d-block mb-3"></i>
+            No maintenance logs found.
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
