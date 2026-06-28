@@ -1,12 +1,13 @@
 from pathlib import Path
 import os
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
-SECRET_KEY = 'django-insecure-l82^4_zm^_x#+_ri4z*l$z*$n7v_0m8*q)%oy062a35y&5@1^k'
-DEBUG = True
-ALLOWED_HOSTS = []
+SECRET_KEY = config("SECRET_KEY")
+DEBUG = config("DEBUG", default=False, cast=bool)
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 # APPLICATIONS
 INSTALLED_APPS = [
@@ -57,9 +58,13 @@ WSGI_APPLICATION = 'AssetDesk.wsgi.application'
 
 # DATABASE
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config("DB_NAME"),
+        "USER": config("DB_USER"),
+        "PASSWORD": config("DB_PASSWORD"),
+        "HOST": config("DB_HOST"),
+        "PORT": config("DB_PORT"),
     }
 }
 
@@ -79,12 +84,14 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# STATIC FILES (اصلی و درست)
+# STATIC FILES
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
+
 ]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # MEDIA FILES
 MEDIA_URL = '/media/'
